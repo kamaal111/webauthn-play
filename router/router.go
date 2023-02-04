@@ -6,10 +6,13 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/kamaal111/webauthn-play/user"
+	"github.com/kamaal111/webauthn-play/utils"
 )
 
 func Start(db *gorm.DB) {
+	serverAddress := utils.UnwrapEnvironment("SERVER_ADDRESS")
 	router := gin.Default()
 	v1 := router.Group("/v1")
 	user.Routes(v1.Group("/user"), db)
@@ -18,5 +21,5 @@ func Start(db *gorm.DB) {
 			"message": "pong",
 		})
 	})
-	router.Run("127.0.0.1:8080")
+	router.Run(serverAddress)
 }

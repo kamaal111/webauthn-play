@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres
+    restart: always
+    container_name: webauthn-play-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webauthn-play
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    env_file: .env
+
+volumes:
+  db-data:
