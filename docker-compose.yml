@@ -16,7 +16,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/server.Dockerfile
     container_name: webauthn-play
     depends_on:
       - database
