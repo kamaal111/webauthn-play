@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-    env_file: .env
+    env_file: server/.env
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
 
@@ -22,7 +22,7 @@ services:
       - database
     ports:
       - "8080:8080"
-    env_file: .env
+    env_file: server/.env
 
 volumes:
   db-data:

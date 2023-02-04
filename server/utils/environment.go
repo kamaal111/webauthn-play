@@ -8,7 +8,7 @@ import (
 func UnwrapEnvironment(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		log.Fatalln("POSTGRES_PASSWORD not defined in environment")
+		log.Fatalf("%s not defined in environment\n", key)
 	}
 
 	return value
