@@ -9,14 +9,14 @@ import (
 	"github.com/kamaal111/webauthn-play/user"
 )
 
-var Database *gorm.DB
-
-func Connect() {
+func Connect() (db *gorm.DB) {
 	dsn := "host=localhost user=postgres password=pass dbname=webauthn-db port=5432 sslmode=disable TimeZone=Europe/Amsterdam"
-	Database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln("failed to connect database")
 	}
 
-	Database.AutoMigrate(&user.User{})
+	db.AutoMigrate(&user.User{})
+
+	return db
 }

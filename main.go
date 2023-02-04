@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	database.Connect()
-	router.Start()
+	db := database.Connect()
+	router.Start(db)
 	user.InitializeWebauthn()
 }
