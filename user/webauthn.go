@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/binary"
 	"log"
 
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -18,4 +19,26 @@ func InitializeWebauthn() {
 	if err != nil {
 		log.Fatalln("failed to initialize webauthn")
 	}
+}
+
+func (user *User) WebAuthnID() []byte {
+	bytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(bytes, uint64(user.ID))
+	return bytes
+}
+
+func (user *User) WebAuthnName() string {
+	return user.Email
+}
+
+func (user *User) WebAuthnDisplayName() string {
+	return user.DisplayName
+}
+
+func (user *User) WebAuthnIcon() string {
+	return ""
+}
+
+func (user *User) WebAuthnCredentials() []webauthn.Credential {
+	return []webauthn.Credential{}
 }
