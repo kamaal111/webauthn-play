@@ -1,0 +1,23 @@
+@mixin primary-color($property, $scheme, $darkness: 0%) {
+  @if $scheme == dark {
+    #{$property}: darken(#f2fafa, $darkness);
+  } @else {
+    #{$property}: darken(#2c3e50, $darkness);
+  }
+}
+
+@mixin background-color($property, $scheme) {
+  @if $scheme == dark {
+    #{$property}: #000000;
+  } @else {
+    #{$property}: #ffffff;
+  }
+}
+
+@mixin accent-color($property, $scheme, $darkness: 0%) {
+  @if $scheme == dark {
+    #{$property}: darken(#6dff38, $darkness);
+  } @else {
+    #{$property}: darken(#2dd551, $darkness);
+  }
+}

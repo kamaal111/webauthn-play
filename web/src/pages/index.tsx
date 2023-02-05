@@ -1,17 +1,18 @@
-import Head from 'next/head'
+import React from 'react';
+
+import Page from '@/components/Layout/Page';
+import SignUpForm from '@/components/SignUpForm';
+
+type User = {
+  name: string;
+};
 
 export default function Home() {
+  const [user, setUser] = React.useState<User | null>(null);
+
   return (
-    <>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Web authn play" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <p>Hallo</p>
-      </main>
-    </>
-  )
+    <Page title={user ? `Welcome ${user.name}` : 'Sign Up'}>
+      <SignUpForm />
+    </Page>
+  );
 }
