@@ -15,6 +15,12 @@ type CreateUserPayload struct {
 	DisplayName string `json:"display_name" binding:"required,min=1"`
 }
 
+type CreateUserResponse struct {
+	Email       string `json:"email"`
+	DisplayName string `json:"display_name"`
+	ID          uint   `json:"id"`
+}
+
 func handleCreateUser(context *gin.Context, db *gorm.DB) {
 	var payload CreateUserPayload
 	err := context.ShouldBindJSON(&payload)
@@ -35,5 +41,6 @@ func handleCreateUser(context *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	context.JSON(http.StatusCreated, user)
+	response := CreateUserResponse{Email: user.Email, DisplayName: user.DisplayName, ID: user.ID}
+	context.JSON(http.StatusCreated, response)
 }

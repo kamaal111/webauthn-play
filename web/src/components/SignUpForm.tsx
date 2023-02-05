@@ -1,8 +1,14 @@
 import React from 'react';
 
+import User from '@/models/user';
+
 type Form = {
   email: string;
   name: string;
+};
+
+type Props = {
+  setUser: (user: User) => void;
 };
 
 const inputs: {
@@ -25,7 +31,7 @@ const inputs: {
   },
 ];
 
-function SignUpForm() {
+function SignUpForm({ setUser }: Props) {
   const [form, setForm] = React.useState<Form>({ email: '', name: '' });
 
   const disableSubmit = form.email.length < 1 || form.name.length < 1;
@@ -33,8 +39,13 @@ function SignUpForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const response = await fetch('http://127.0.0.1:8080/ping', {});
-    console.log(response);
+    const result = await User.register({ email: form.email, name: form.name });
+    if (!result.ok) {
+      console.error(result.error);
+      return;
+    }
+
+    setUser(result.value);
   }
 
   function handleFormChange(
