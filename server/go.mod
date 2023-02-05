@@ -3,6 +3,7 @@ module github.com/kamaal111/webauthn-play
 go 1.20
 
 require (
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-webauthn/webauthn v0.7.0
 	gorm.io/driver/postgres v1.4.6

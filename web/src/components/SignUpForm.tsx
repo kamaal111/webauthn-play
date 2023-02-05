@@ -30,9 +30,11 @@ function SignUpForm() {
 
   const disableSubmit = form.email.length < 1 || form.name.length < 1;
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log('form', form);
+
+    const response = await fetch('http://127.0.0.1:8080/ping', {});
+    console.log(response);
   }
 
   function handleFormChange(
