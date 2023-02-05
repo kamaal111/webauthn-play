@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/binary"
 	"log"
 
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -22,9 +21,7 @@ func InitializeWebauthn() {
 }
 
 func (user *User) WebAuthnID() []byte {
-	bytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(bytes, uint64(user.ID))
-	return bytes
+	return []byte(user.WebauthnID)
 }
 
 func (user *User) WebAuthnName() string {

@@ -23,13 +23,15 @@ class ServerUserClient {
   async create({
     email,
     displayName,
+    webauthnID,
   }: {
     email: string;
     displayName: string;
+    webauthnID: string;
   }): Promise<Result<CreateUserResponse, ServerClientError>> {
     const response = await makeRequest<CreateUserResponse>({
       url: this.url,
-      payload: { email, display_name: displayName },
+      payload: { email, display_name: displayName, webauthn_id: webauthnID },
       method: 'POST',
     });
     if (!response.ok) {

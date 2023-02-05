@@ -13,6 +13,7 @@ import (
 type CreateUserPayload struct {
 	Email       string `json:"email" binding:"required,min=5"`
 	DisplayName string `json:"display_name" binding:"required,min=1"`
+	WebauthnID  string `json:"webauthn_id" binding:"required,min=16"`
 }
 
 type CreateUserResponse struct {
@@ -35,7 +36,7 @@ func handleCreateUser(context *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	user, err := createUser(db, payload.Email, payload.DisplayName)
+	user, err := createUser(db, payload.Email, payload.DisplayName, payload.WebauthnID)
 	if err != nil {
 		utils.MakeError(context, http.StatusConflict, "Email already exists", err)
 		return

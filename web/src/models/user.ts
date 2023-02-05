@@ -18,7 +18,11 @@ class User implements IUser {
     name: string;
   }): Promise<Result<User>> {
     const client = new ServerClient();
-    const response = await client.user.create({ email, displayName: name });
+    const response = await client.user.create({
+      email,
+      displayName: name,
+      webauthnID: '', // generate something somehow
+    });
     if (!response.ok) {
       return response;
     }

@@ -12,11 +12,12 @@ type User struct {
 	gorm.Model
 	Email       string `gorm:"unique"`
 	DisplayName string
+	WebauthnID  string `gorm:"unique"`
 }
 
 // GORM
 
-func createUser(db *gorm.DB, email string, displayName string) (*User, error) {
+func createUser(db *gorm.DB, email string, displayName string, webauthnID string) (*User, error) {
 	var user User
 	db.First(&user, "email = ?", email)
 	if user.ID != 0 {
