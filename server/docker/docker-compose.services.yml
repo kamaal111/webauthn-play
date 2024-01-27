@@ -1,0 +1,13 @@
+services:
+  db:
+    container_name: server-db
+    image: postgres:16
+    volumes:
+      - ../data/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: postgres

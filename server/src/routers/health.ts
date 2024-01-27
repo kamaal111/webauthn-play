@@ -1,6 +1,7 @@
-import {Router} from 'express';
+import { Router } from 'express';
 
-import type {AppRouter} from '../types';
+import type { AppRouter } from '../types';
+import type { PrismaClient } from '@prisma/client';
 
 class HealthRouter implements AppRouter {
   path = '/health';
@@ -11,11 +12,13 @@ class HealthRouter implements AppRouter {
     this.initializeRoutes();
   }
 
+  injectContext = (_: { prisma: PrismaClient }) => {};
+
   private initializeMiddleware() {}
 
   private initializeRoutes() {
     this.router.get('/ping', (_request, response) =>
-      response.json({message: 'pong'})
+      response.json({ message: 'pong' })
     );
   }
 }

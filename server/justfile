@@ -1,7 +1,16 @@
+set export
+
+DATABASE_URL := "postgresql://postgres:pass@host.docker.internal:5432/db"
+
 run-dev: install-node-modules
     #!/bin/zsh
 
     bun dev
+
+migrate: install-node-modules
+    #!/bin/zsh
+
+    bun migrate
 
 bootstrap: install-node-modules
 

@@ -3,9 +3,11 @@
   "module": "src/index.ts",
   "scripts": {
     "start": "bun run .",
-    "dev": "bun --watch ."
+    "dev": "bun --watch .",
+    "migrate": "prisma migrate dev --name init"
   },
   "dependencies": {
+    "@prisma/client": "5.8.1",
     "express": "^4.18.2",
     "morgan": "^1.10.0"
   },
@@ -21,6 +23,7 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "prettier": "^3.2.4",
+    "prisma": "^5.8.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.1.0"
   }
