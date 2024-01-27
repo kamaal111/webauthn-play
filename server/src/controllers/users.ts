@@ -1,4 +1,4 @@
-import { Prisma, type PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient, type User } from '@prisma/client';
 import { type NextFunction, type Response } from 'express';
 import { type AppRequest } from '../types';
 import { z } from 'zod';
@@ -25,7 +25,7 @@ class UsersController {
       return;
     }
 
-    let user: Awaited<object | undefined>;
+    let user: Awaited<User | undefined>;
     try {
       user = await this.prisma?.user.create({ data: userPayload });
     } catch (error) {
