@@ -7,6 +7,7 @@ const INTERNAL_SERVER_ERROR_MESSAGE = 'Okey we messed up';
 const STATUS_CODE_TO_MESSAGE: Record<number, string> = {
   400: 'Bad Request',
   [NOT_FOUND_CODE]: 'Not Found',
+  409: 'Resource already exists',
   500: INTERNAL_SERVER_ERROR_MESSAGE,
 };
 
