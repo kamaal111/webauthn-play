@@ -12,7 +12,7 @@ class HealthRouter implements AppRouter {
     this.initializeRoutes();
   }
 
-  injectContext = (_: { prisma: PrismaClient }) => {};
+  injectRouteContext = (_: { prisma: PrismaClient }) => {};
 
   private initializeMiddleware() {}
 

@@ -4,7 +4,7 @@ import type { Request, Router } from 'express';
 export interface AppRouter {
   path: string;
   router: Router;
-  injectContext: (context: { prisma: PrismaClient }) => void;
+  injectRouteContext: (context: { prisma: PrismaClient }) => void;
 }
 
 export type AppRequest<

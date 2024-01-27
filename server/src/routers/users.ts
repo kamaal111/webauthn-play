@@ -7,16 +7,14 @@ class UsersRouter implements AppRouter {
   path = '/users';
   router = Router();
   controller = new UsersController();
-  prisma?: PrismaClient;
 
   constructor() {
     this.initializeMiddleware();
     this.initializeRoutes();
   }
 
-  injectContext = (context: { prisma: PrismaClient }) => {
-    this.prisma = context.prisma;
-    this.controller.injectContext(context);
+  injectRouteContext = (context: { prisma: PrismaClient }) => {
+    this.controller.injectRouteContext(context);
   };
 
   private initializeMiddleware() {}

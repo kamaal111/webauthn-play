@@ -7,15 +7,15 @@ import { PrismaClient } from '@prisma/client';
 class App {
   private readonly app: express.Express;
   private readonly errors: ErrorsController;
-  private readonly prisma: PrismaClient;
 
   constructor({ routers }: { routers: AppRouter[] }) {
     this.app = express();
     this.errors = new ErrorsController();
-    this.prisma = new PrismaClient();
+
+    const prisma = new PrismaClient();
 
     this.initializeMiddleware();
-    this.initializeRoutes(routers);
+    this.initializeRoutes(routers, prisma);
   }
 
   listen({ serverPort }: { serverPort: string }) {
@@ -29,9 +29,9 @@ class App {
     this.app.use(express.json());
   }
 
-  private initializeRoutes(routers: AppRouter[]) {
+  private initializeRoutes(routers: AppRouter[], prisma: PrismaClient) {
     for (const router of routers) {
-      router.injectContext({ prisma: this.prisma });
+      router.injectRouteContext({ prisma });
       this.app.use(router.path, router.router);
     }
 

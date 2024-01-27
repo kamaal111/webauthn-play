@@ -46,7 +46,7 @@ class UsersController {
     response.json({ user });
   };
 
-  injectContext = (context: { prisma: PrismaClient }) => {
+  injectRouteContext = (context: { prisma: PrismaClient }) => {
     this.prisma = context.prisma;
   };
 }
