@@ -1,0 +1,5 @@
+post-create:
+    #!/bin/zsh
+
+    cp -f .zshrc ~/.zshrc
+    cp -f .zshenv ~/.zshenv

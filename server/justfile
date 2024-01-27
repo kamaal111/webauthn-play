@@ -1,0 +1,12 @@
+run-dev: install-node-modules
+    #!/bin/zsh
+
+    bun dev
+
+bootstrap: install-node-modules
+
+[private]
+install-node-modules:
+    #!/bin/zsh
+
+    bun i

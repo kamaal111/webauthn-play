@@ -1,0 +1,9 @@
+services:
+  code:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    container_name: webauthn-play-code
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
