@@ -20,7 +20,8 @@
 				"esbenp.prettier-vscode",
 				"yoavbls.pretty-ts-errors",
 				"prisma.prisma",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"oven.bun-vscode"
 			]
 		}
 	},
