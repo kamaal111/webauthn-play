@@ -5,14 +5,14 @@ import { z } from 'zod';
 
 const UserPayload = z.object({
   name: z.string().optional(),
-  email: z.string(),
+  email: z.string().email().min(5),
 });
 
 class UsersController {
   prisma?: PrismaClient;
 
   create = async (
-    request: AppRequest<unknown, unknown, { name?: string; email?: string }>,
+    request: AppRequest,
     response: Response,
     next: NextFunction
   ) => {
@@ -21,7 +21,7 @@ class UsersController {
       userPayload = UserPayload.parse(request.body);
     } catch (error) {
       response.status(400);
-      next();
+      next(error);
       return;
     }
 
@@ -33,13 +33,13 @@ class UsersController {
         switch (error.code) {
           case 'P2002':
             response.status(409);
-            next();
+            next(error);
             return;
           default:
             break;
         }
       }
-      next();
+      next(error);
       return;
     }
 
