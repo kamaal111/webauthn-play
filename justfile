@@ -11,6 +11,7 @@ migrate-server:
 	just server/migrate
 
 bootstrap: install-node-modules
+	just modules/bootstrap
 	just server/bootstrap
 	just website/bootstrap
 

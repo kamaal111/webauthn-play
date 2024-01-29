@@ -2,11 +2,7 @@ import { Prisma, type PrismaClient, type User } from '@prisma/client';
 import { type NextFunction, type Response } from 'express';
 import { type AppRequest } from '../types';
 import { z } from 'zod';
-
-const UserPayload = z.object({
-  name: z.string().optional(),
-  email: z.string().email().min(5),
-});
+import { UserPayload } from 'shared-validator/src/users';
 
 class UsersController {
   prisma?: PrismaClient;

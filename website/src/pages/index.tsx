@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import * as React from 'react';
+import { UserPayload } from 'shared-validator/src/users';
 
 import styles from '@/styles/Home.module.css';
 
@@ -15,7 +16,9 @@ export default function Home() {
         const inputTarget = target as HTMLInputElement;
         payload[inputTarget.name] = inputTarget.value;
       }
-      console.log('payload', payload);
+
+      const user = UserPayload.parse(payload);
+      console.log('user', user);
     },
     []
   );

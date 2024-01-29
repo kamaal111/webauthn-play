@@ -1,0 +1,28 @@
+{
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.4"
+  },
+  "name": "shared-validator",
+  "author": "Kamaal Farah",
+  "module": "dist/shared-validator.esm.js",
+  "devDependencies": {
+    "tsdx": "^0.14.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}
