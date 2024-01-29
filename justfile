@@ -10,6 +10,11 @@ run-dev-website:
 migrate-server:
 	just server/migrate
 
-bootstrap:
+bootstrap: install-node-modules
 	just server/bootstrap
 	just website/bootstrap
+
+install-node-modules:
+	#!/bin/zsh
+
+	bun i
