@@ -2,25 +2,41 @@ import Head from 'next/head';
 import * as React from 'react';
 import { UserPayload } from 'shared-validator/src/users';
 
+import Input from '@/components/Input';
+
 import styles from '@/styles/Home.module.css';
 
-export default function Home() {
+type FormValues = {
+  email: string;
+  name: string;
+};
+
+function validateEmail(email: FormValues['email']) {
+  return UserPayload.shape.email.safeParse(email).success;
+}
+
+function Home() {
+  const [formValues, setFormValues] = React.useState<FormValues>({
+    name: '',
+    email: '',
+  });
+
+  const emailIsValid = validateEmail(formValues.email);
+
   const signUpFormSubmit = React.useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const payload: Record<string, string> = {};
-      for (const target of e.target as unknown as HTMLElement[]) {
-        if (target.tagName !== 'INPUT') continue;
+      if (!emailIsValid) return;
 
-        const inputTarget = target as HTMLInputElement;
-        payload[inputTarget.name] = inputTarget.value;
+      try {
+        const user = UserPayload.parse(formValues);
+        console.log('user', user);
+      } catch (error) {
+        console.log('error', error);
       }
-
-      const user = UserPayload.parse(payload);
-      console.log('user', user);
     },
-    []
+    [formValues, emailIsValid]
   );
 
   return (
@@ -37,11 +53,30 @@ export default function Home() {
       <main>
         <h1>Sign Up</h1>
         <form className={styles['sign-up-form']} onSubmit={signUpFormSubmit}>
-          <input type="text" name="name" placeholder="Name" />
-          <input type="email" name="email" placeholder="Email" />
-          <button type="submit">Submit</button>
+          <Input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={formValues.name}
+            onChange={value => setFormValues({ ...formValues, name: value })}
+          />
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            value={formValues.email}
+            minLength={UserPayload.shape.email.minLength ?? 0}
+            isValid={emailIsValid}
+            onChange={value => setFormValues({ ...formValues, email: value })}
+          />
+          <button type="submit" disabled={!emailIsValid}>
+            Submit
+          </button>
         </form>
       </main>
     </>
   );
 }
+
+export default Home;
