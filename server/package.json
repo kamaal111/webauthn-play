@@ -9,12 +9,13 @@
   "dependencies": {
     "@prisma/client": "^5.8.1",
     "@trpc/server": "^10.45.0",
-    "morgan": "^1.10.0",
+    "cors": "^2.8.5",
     "shared-validator": "file:../modules/shared-validator",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cors": "^2.8.17",
     "@types/node": "^20.11.8",
     "prisma": "^5.8.1",
     "typescript": "~5.1.0"

@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { UserPayload } from 'shared-validator/src/users';
 import toast, { Toaster } from 'react-hot-toast';
-import { ZodError, z } from 'zod';
+import { type ZodError, type z } from 'zod';
+import { TRPCClientError } from '@trpc/client';
 
 import Input from '@/components/Input';
+
+import trpc from '@/utils/trpc';
 
 import styles from '@/styles/components/sign-up-form.module.css';
 
@@ -25,7 +28,7 @@ function SignUpForm() {
   const emailIsValid = validateEmail(formValues.email);
 
   const signUpFormSubmit = React.useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       if (!emailIsValid) return;
@@ -43,7 +46,20 @@ function SignUpForm() {
         return;
       }
 
-      console.log('user', user);
+      try {
+        await trpc.users.signUp.mutate(user);
+      } catch (error) {
+        if (error instanceof TRPCClientError) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.error('Failed to create a new user');
+        return;
+      }
+
+      toast.success('Successfully created user');
+      setFormValues({ name: '', email: '' });
     },
     [formValues, emailIsValid]
   );
@@ -75,6 +91,7 @@ function SignUpForm() {
         <Toaster
           toastOptions={{
             error: { style: { backgroundColor: 'red' } },
+            success: { style: { backgroundColor: 'green' } },
             style: { backgroundColor: '#EAC674' },
           }}
         />

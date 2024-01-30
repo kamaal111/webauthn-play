@@ -1,15 +1,15 @@
 import { type PrismaClient } from '@prisma/client';
 
 import { router } from '../../trpc';
-import userSignUp from './user-sign-up';
+import signUp from './sign-up';
 
-type Context = {
+type RouteContext = {
   prisma: PrismaClient;
 };
 
-function usersRouter(context: Context) {
+function usersRouter(routeContext: RouteContext) {
   return router({
-    userSignUp: userSignUp(context),
+    signUp: signUp(routeContext),
   });
 }
 
