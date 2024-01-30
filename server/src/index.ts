@@ -1,12 +1,10 @@
-import App from './app';
+import { createHTTPServer } from '@trpc/server/adapters/standalone';
+
 import config from './config';
-import HealthRouter from './routers/health';
-import UsersRouter from './routers/users';
+import appRouter from './router';
 
-import type { AppRouter } from './types';
+const server = createHTTPServer({
+  router: appRouter,
+});
 
-const routers: AppRouter[] = [new HealthRouter(), new UsersRouter()];
-
-const app = new App({ routers });
-
-app.listen({ serverPort: config.SERVER_PORT });
+server.listen(config.SERVER_PORT);
