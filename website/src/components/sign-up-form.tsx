@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { UserPayload } from 'shared-validator/src/users';
+import toast, { Toaster } from 'react-hot-toast';
+import { ZodError, z } from 'zod';
 
 import Input from '@/components/Input';
 
@@ -28,12 +30,20 @@ function SignUpForm() {
 
       if (!emailIsValid) return;
 
+      let user: Awaited<z.infer<typeof UserPayload>>;
       try {
-        const user = UserPayload.parse(formValues);
-        console.log('user', user);
+        user = UserPayload.parse(formValues);
       } catch (error) {
-        console.log('error', error);
+        const message = (error as ZodError).issues?.[0]?.message;
+        if (!message) {
+          toast.error('Oops something went wrong');
+          return;
+        }
+        toast(message);
+        return;
       }
+
+      console.log('user', user);
     },
     [formValues, emailIsValid]
   );
@@ -62,6 +72,12 @@ function SignUpForm() {
         <button type="submit" disabled={!emailIsValid}>
           Submit
         </button>
+        <Toaster
+          toastOptions={{
+            error: { style: { backgroundColor: 'red' } },
+            style: { backgroundColor: '#EAC674' },
+          }}
+        />
       </form>
     </div>
   );
