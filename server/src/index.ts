@@ -8,3 +8,4 @@ const server = createHTTPServer({
 });
 
 server.listen(config.SERVER_PORT);
+console.log(`Listening on PORT ${config.SERVER_PORT}`);
