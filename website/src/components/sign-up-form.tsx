@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { UserPayload } from 'shared-validator/src/users';
+import {
+  UserPayload,
+  SignUpPreCheckResponse,
+} from 'shared-validator/src/users';
 import toast, { Toaster } from 'react-hot-toast';
 import { type ZodError, type z } from 'zod';
 import { TRPCClientError } from '@trpc/client';
@@ -15,10 +18,6 @@ type FormValues = {
   name: string;
 };
 
-function validateEmail(email: FormValues['email']) {
-  return UserPayload.shape.email.safeParse(email).success;
-}
-
 function SignUpForm() {
   const [formValues, setFormValues] = React.useState<FormValues>({
     name: '',
@@ -30,36 +29,16 @@ function SignUpForm() {
   const signUpFormSubmit = React.useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-
       if (!emailIsValid) return;
 
-      let user: Awaited<z.infer<typeof UserPayload>>;
-      try {
-        user = UserPayload.parse(formValues);
-      } catch (error) {
-        const message = (error as ZodError).issues?.[0]?.message;
-        if (!message) {
-          toast.error('Oops something went wrong');
-          return;
-        }
-        toast(message);
-        return;
-      }
+      const signUpToken = await getSignUpToken(formValues);
+      if (signUpToken == null) return;
 
-      try {
-        await trpc.users.signUp.mutate(user);
-      } catch (error) {
-        if (error instanceof TRPCClientError) {
-          toast.error(error.message);
-          return;
-        }
+      await makeCredentials(signUpToken, formValues);
+      // const success = await signUp({ formValues, signUpToken });
+      // if (!success) return;
 
-        toast.error('Failed to create a new user');
-        return;
-      }
-
-      toast.success('Successfully created user');
-      setFormValues({ name: '', email: '' });
+      // setFormValues({ name: '', email: '' });
     },
     [formValues, emailIsValid]
   );
@@ -72,7 +51,9 @@ function SignUpForm() {
           type="text"
           name="name"
           placeholder="Name"
+          required
           value={formValues.name}
+          minLength={UserPayload.shape.name.minLength ?? 0}
           onChange={value => setFormValues({ ...formValues, name: value })}
         />
         <Input
@@ -98,6 +79,75 @@ function SignUpForm() {
       </form>
     </div>
   );
+}
+
+function validateEmail(email: FormValues['email']) {
+  return UserPayload.shape.email.safeParse(email).success;
+}
+
+async function getSignUpToken(formValues: FormValues) {
+  let response: Awaited<z.infer<typeof SignUpPreCheckResponse>>;
+  try {
+    response = await trpc.users.signUpPreCheck.mutate(formValues);
+  } catch (error) {
+    if (error instanceof TRPCClientError) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.error('Failed to create a new user');
+    return;
+  }
+
+  return response;
+}
+
+async function makeCredentials(
+  signUpToken: z.infer<typeof SignUpPreCheckResponse>,
+  formValues: FormValues
+) {
+  const publicKeyCredentialCreationOptions = {
+    challenge: Uint8Array.from(Buffer.from(signUpToken.token, 'hex')),
+    rp: null,
+    user: {
+      id: Uint8Array.from(signUpToken.credential_id, c => c.charCodeAt(0)),
+      name: formValues.email,
+      displayName: formValues.name,
+    },
+    pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+    authenticatorSelection: {
+      authenticatorAttachment: 'cross-platform',
+    },
+    timeout: 60000,
+    attestation: 'direct',
+  };
+  console.log(
+    'publicKeyCredentialCreationOptions',
+    publicKeyCredentialCreationOptions
+  );
+}
+
+async function signUp({
+  formValues,
+  signUpToken,
+}: {
+  formValues: FormValues;
+  signUpToken: string;
+}): Promise<boolean> {
+  try {
+    await trpc.users.signUp.mutate({ ...formValues, token: signUpToken });
+  } catch (error) {
+    if (error instanceof TRPCClientError) {
+      toast.error(error.message);
+      return false;
+    }
+
+    toast.error('Failed to create a new user');
+    return false;
+  }
+
+  toast.success('Successfully created user');
+  return true;
 }
 
 export default SignUpForm;
