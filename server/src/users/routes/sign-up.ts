@@ -23,7 +23,19 @@ function signUp({ prisma }: RouteContext) {
         });
       }
 
-      const user = await prisma.user.create({ data: input });
+      const preSignUpToken = await prisma.preSignUpToken.findFirst({
+        where: { email: input.email },
+      });
+      if (preSignUpToken == null) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid user provided',
+        });
+      }
+
+      const user = await prisma.user.create({
+        data: { ...input, credential_id: preSignUpToken.credential_id },
+      });
 
       return { name: user.name, email: user.email };
     });

@@ -8,9 +8,10 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
+  id            Int    @id @default(autoincrement())
+  email         String @unique
+  name          String
+  credential_id String
 }
 
 model PreSignUpToken {

@@ -4,7 +4,7 @@ import {
   SignUpPreCheckResponse,
 } from 'shared-validator/src/users';
 import toast, { Toaster } from 'react-hot-toast';
-import { type ZodError, type z } from 'zod';
+import { type z } from 'zod';
 import { TRPCClientError } from '@trpc/client';
 
 import Input from '@/components/Input';
@@ -17,6 +17,8 @@ type FormValues = {
   email: string;
   name: string;
 };
+
+type SignUpToken = z.infer<typeof SignUpPreCheckResponse>;
 
 function SignUpForm() {
   const [formValues, setFormValues] = React.useState<FormValues>({
@@ -34,11 +36,16 @@ function SignUpForm() {
       const signUpToken = await getSignUpToken(formValues);
       if (signUpToken == null) return;
 
-      await makeCredentials(signUpToken, formValues);
-      // const success = await signUp({ formValues, signUpToken });
-      // if (!success) return;
+      const credential = await makeCredentials(signUpToken, formValues);
+      if (credential == null) {
+        toast.error('Failed to create a user');
+        return;
+      }
 
-      // setFormValues({ name: '', email: '' });
+      const success = await signUp({ formValues, signUpToken, credential });
+      if (!success) return;
+
+      setFormValues({ name: '', email: '' });
     },
     [formValues, emailIsValid]
   );
@@ -86,7 +93,7 @@ function validateEmail(email: FormValues['email']) {
 }
 
 async function getSignUpToken(formValues: FormValues) {
-  let response: Awaited<z.infer<typeof SignUpPreCheckResponse>>;
+  let response: Awaited<SignUpToken>;
   try {
     response = await trpc.users.signUpPreCheck.mutate(formValues);
   } catch (error) {
@@ -106,36 +113,38 @@ async function makeCredentials(
   signUpToken: z.infer<typeof SignUpPreCheckResponse>,
   formValues: FormValues
 ) {
-  const publicKeyCredentialCreationOptions = {
-    challenge: Uint8Array.from(Buffer.from(signUpToken.token, 'hex')),
-    rp: null,
-    user: {
-      id: Uint8Array.from(signUpToken.credential_id, c => c.charCodeAt(0)),
-      name: formValues.email,
-      displayName: formValues.name,
+  return navigator.credentials.create({
+    publicKey: {
+      challenge: Uint8Array.from(Buffer.from(signUpToken.token, 'hex')),
+      rp: {
+        name: 'Web Authn Play',
+      },
+      user: {
+        id: Uint8Array.from(signUpToken.credential_id, c => c.charCodeAt(0)),
+        name: formValues.email,
+        displayName: formValues.name,
+      },
+      pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+      authenticatorSelection: {
+        authenticatorAttachment: 'cross-platform',
+      },
+      timeout: 60000,
+      attestation: 'direct',
     },
-    pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
-    authenticatorSelection: {
-      authenticatorAttachment: 'cross-platform',
-    },
-    timeout: 60000,
-    attestation: 'direct',
-  };
-  console.log(
-    'publicKeyCredentialCreationOptions',
-    publicKeyCredentialCreationOptions
-  );
+  });
 }
 
 async function signUp({
   formValues,
   signUpToken,
+  credential,
 }: {
   formValues: FormValues;
-  signUpToken: string;
+  signUpToken: SignUpToken;
+  credential: Credential;
 }): Promise<boolean> {
   try {
-    await trpc.users.signUp.mutate({ ...formValues, token: signUpToken });
+    await trpc.users.signUp.mutate({ ...formValues, token: signUpToken.token });
   } catch (error) {
     if (error instanceof TRPCClientError) {
       toast.error(error.message);
