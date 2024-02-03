@@ -10,6 +10,7 @@ import { TRPCClientError } from '@trpc/client';
 import Input from '@/components/Input';
 
 import trpc from '@/utils/trpc';
+import makeCredentials from '@/utils/credentials/makeCredentials';
 
 import styles from '@/styles/components/sign-up-form.module.css';
 
@@ -36,16 +37,17 @@ function SignUpForm() {
       const signUpToken = await getSignUpToken(formValues);
       if (signUpToken == null) return;
 
-      const credential = await makeCredentials(signUpToken, formValues);
+      const credential = await makeCredentials({ signUpToken, ...formValues });
       if (credential == null) {
         toast.error('Failed to create a user');
         return;
       }
 
-      const success = await signUp({ formValues, signUpToken, credential });
-      if (!success) return;
+      console.log('credential', credential);
+      // const success = await signUp({ formValues, signUpToken, credential });
+      // if (!success) return;
 
-      setFormValues({ name: '', email: '' });
+      // setFormValues({ name: '', email: '' });
     },
     [formValues, emailIsValid]
   );
@@ -109,31 +111,6 @@ async function getSignUpToken(formValues: FormValues) {
   return response;
 }
 
-async function makeCredentials(
-  signUpToken: z.infer<typeof SignUpPreCheckResponse>,
-  formValues: FormValues
-) {
-  return navigator.credentials.create({
-    publicKey: {
-      challenge: Uint8Array.from(Buffer.from(signUpToken.token, 'hex')),
-      rp: {
-        name: 'Web Authn Play',
-      },
-      user: {
-        id: Uint8Array.from(signUpToken.credential_id, c => c.charCodeAt(0)),
-        name: formValues.email,
-        displayName: formValues.name,
-      },
-      pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
-      authenticatorSelection: {
-        authenticatorAttachment: 'cross-platform',
-      },
-      timeout: 60000,
-      attestation: 'direct',
-    },
-  });
-}
-
 async function signUp({
   formValues,
   signUpToken,
@@ -141,7 +118,7 @@ async function signUp({
 }: {
   formValues: FormValues;
   signUpToken: SignUpToken;
-  credential: Credential;
+  credential: string;
 }): Promise<boolean> {
   try {
     await trpc.users.signUp.mutate({ ...formValues, token: signUpToken.token });

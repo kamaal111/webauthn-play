@@ -14,6 +14,11 @@ model User {
   credential_id String
 }
 
+model UserCredentials {
+  id         String @id
+  public_key String
+}
+
 model PreSignUpToken {
   email         String   @unique
   token         String
